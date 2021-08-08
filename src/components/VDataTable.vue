@@ -1,6 +1,16 @@
 <script>
+import VDialog from './VDialog.vue';
+
 export default {
   name: 'VDataTable',
+  components: {
+    VDialog,
+  },
+  data() {
+    return {
+      isDialogVisible: false,
+    };
+  },
 };
 </script>
 
@@ -21,8 +31,8 @@ export default {
         <tbody class="v-data-table__tbody">
           <tr class="v-data-table__tbody__row">
             <td class="v-data-table__tbody__column">
-              <div class="v-data-table__tbody__column__item">
-                <span class="v-data-table__tbody-column-item__data text-right">1</span>
+              <div class="v-data-table__tbody__column__item text-right">
+                <span class="v-data-table__tbody-column-item__data">1</span>
               </div>
             </td>
             <td class="v-data-table__tbody__column">
@@ -44,7 +54,7 @@ export default {
                 <span
                   class="
                     v-data-table__tbody-column-item__data
-                    status--button
+                    status--button done
                   "
                 >
                   Done
@@ -62,9 +72,58 @@ export default {
               </div>
             </td>
           </tr>
+
+          <tr class="v-data-table__tbody__row">
+            <td class="v-data-table__tbody__column">
+              <div class="v-data-table__tbody__column__item text-right">
+                <span class="v-data-table__tbody-column-item__data">14</span>
+              </div>
+            </td>
+            <td class="v-data-table__tbody__column">
+              <div class="v-data-table__tbody__column__item">
+                <span class="v-data-table__tbody-column-item__data">
+                  laboriosam mollitia et enim quasi adipisci quia provident illum
+                </span>
+              </div>
+            </td>
+            <td class="v-data-table__tbody__column">
+              <div class="v-data-table__tbody__column__item">
+                <span class="v-data-table__tbody-column-item__data">
+                  Leanne Graham
+                </span>
+              </div>
+            </td>
+            <td class="v-data-table__tbody__column">
+              <div class="v-data-table__tbody__column__item justify-center">
+                <span
+                  class="
+                    v-data-table__tbody-column-item__data
+                    status--button in-progress
+                  "
+                >
+                  In Progress
+                </span>
+              </div>
+            </td>
+            <td class="v-data-table__tbody__column">
+              <div class="v-data-table__tbody__column__item flex item-center justify-center">
+                <div class="v-data-table__tbody__column__item__data action--button edit--button">
+                  <img src="../assets/svg/edit_icon.svg" alt="Edit">
+                </div>
+                <div class="v-data-table__tbody__column__item__data action--button delete--button">
+                  <img src="../assets/svg/delete_icon.svg" alt="Delete">
+                </div>
+              </div>
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
+
+    <v-dialog
+      v-if="isDialogVisible"
+      @close="isDialogVisible = false"
+    />
   </div>
 </template>
 
@@ -114,7 +173,15 @@ export default {
             }
 
             .status--button {
-              @apply py-1 px-3 bg-green-100 text-green-500 rounded-full text-xs;
+              @apply py-1 px-3 rounded-full text-xs;
+            }
+
+            .done {
+              @apply bg-green-100 text-green-500;
+            }
+
+            .in-progress{
+              @apply bg-blue-100 text-blue-500;
             }
           }
         }
