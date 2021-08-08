@@ -9,7 +9,18 @@ export default {
   data() {
     return {
       isDialogVisible: false,
+      textCenterInThead: ['status', 'actions'],
     };
+  },
+  props: {
+    headers: {
+      type: Array,
+      default: () => [],
+    },
+    items: {
+      type: Array,
+      default: () => [],
+    },
   },
 };
 </script>
@@ -20,32 +31,39 @@ export default {
       <table class="v-data-table__content">
         <thead>
           <tr class="v-data-table__thead-row">
-            <th class="py-3 px-6 text-left">#</th>
-            <th class="py-3 px-6 text-left">Title</th>
-            <th class="py-3 px-6 text-left">Assignee</th>
-            <th class="py-3 px-6 text-center">Status</th>
-            <th class="py-3 px-6 text-center">Actions</th>
+            <th
+              v-for="{ id, value, text } in headers"
+              :key="id"
+              class="py-3 px-6"
+              :class="textCenterInThead.includes(value) ? 'text-center' : 'text-left'"
+            >
+              {{ text }}
+            </th>
           </tr>
         </thead>
 
         <tbody class="v-data-table__tbody">
-          <tr class="v-data-table__tbody__row">
+          <tr
+            v-for="item in items"
+            :key="item.id"
+            class="v-data-table__tbody__row"
+          >
             <td class="v-data-table__tbody__column">
               <div class="v-data-table__tbody__column__item text-right">
-                <span class="v-data-table__tbody-column-item__data">1</span>
+                {{ item.id }}
               </div>
             </td>
             <td class="v-data-table__tbody__column">
               <div class="v-data-table__tbody__column__item">
                 <span class="v-data-table__tbody-column-item__data">
-                  laboriosam mollitia et enim quasi adipisci quia provident illum
+                  {{ item.title }}
                 </span>
               </div>
             </td>
             <td class="v-data-table__tbody__column">
               <div class="v-data-table__tbody__column__item">
                 <span class="v-data-table__tbody-column-item__data">
-                  Leanne Graham
+                  {{ item.name }}
                 </span>
               </div>
             </td>
@@ -54,54 +72,11 @@ export default {
                 <span
                   class="
                     v-data-table__tbody-column-item__data
-                    status--button done
+                    status--button
                   "
+                  :class="item.completed.value ? 'done' : 'in-progress'"
                 >
-                  Done
-                </span>
-              </div>
-            </td>
-            <td class="v-data-table__tbody__column">
-              <div class="v-data-table__tbody__column__item flex item-center justify-center">
-                <div class="v-data-table__tbody__column__item__data action--button edit--button">
-                  <img src="../assets/svg/edit_icon.svg" alt="Edit">
-                </div>
-                <div class="v-data-table__tbody__column__item__data action--button delete--button">
-                  <img src="../assets/svg/delete_icon.svg" alt="Delete">
-                </div>
-              </div>
-            </td>
-          </tr>
-
-          <tr class="v-data-table__tbody__row">
-            <td class="v-data-table__tbody__column">
-              <div class="v-data-table__tbody__column__item text-right">
-                <span class="v-data-table__tbody-column-item__data">14</span>
-              </div>
-            </td>
-            <td class="v-data-table__tbody__column">
-              <div class="v-data-table__tbody__column__item">
-                <span class="v-data-table__tbody-column-item__data">
-                  laboriosam mollitia et enim quasi adipisci quia provident illum
-                </span>
-              </div>
-            </td>
-            <td class="v-data-table__tbody__column">
-              <div class="v-data-table__tbody__column__item">
-                <span class="v-data-table__tbody-column-item__data">
-                  Leanne Graham
-                </span>
-              </div>
-            </td>
-            <td class="v-data-table__tbody__column">
-              <div class="v-data-table__tbody__column__item justify-center">
-                <span
-                  class="
-                    v-data-table__tbody-column-item__data
-                    status--button in-progress
-                  "
-                >
-                  In Progress
+                  {{ item.completed.text }}
                 </span>
               </div>
             </td>
@@ -134,7 +109,7 @@ export default {
   @apply w-full lg:w-5/6;
 
   &__container {
-    @apply bg-white shadow-md rounded overflow-hidden;
+    @apply max-h-96 bg-white shadow-md rounded overflow-scroll;
 
     #{ $self }__content {
       @apply min-w-max w-full table-auto;
