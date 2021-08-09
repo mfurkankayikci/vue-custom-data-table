@@ -13,4 +13,22 @@ export default {
         commit('setUsers', data);
       });
   },
+  deleteTodo({ commit }, id) {
+    return axios.delete(`https://jsonplaceholder.typicode.com/todos/${id}`)
+      .then((response) => {
+        if (response.status === 200) {
+          commit('deleteTodo', id);
+        }
+      });
+  },
+  updateTodo({ commit }, formData) {
+    console.log(formData);
+
+    return axios.patch(`https://jsonplaceholder.typicode.com/todos/${formData.id}`)
+      .then((response) => {
+        if (response.status === 200) {
+          commit('updateTodo', formData);
+        }
+      });
+  },
 };

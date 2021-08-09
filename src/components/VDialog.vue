@@ -1,4 +1,5 @@
 <script>
+import { mapActions } from 'vuex';
 import VButton from './VButton.vue';
 
 export default {
@@ -6,10 +7,30 @@ export default {
   components: {
     VButton,
   },
+  data() {
+    return {
+      isCompleted: null,
+      title: '',
+    };
+  },
+  props: {
+    selected: {
+      type: Object,
+    },
+  },
+  mounted() {
+    this.isCompleted = this.selected.completed.value;
+    this.title = this.selected.title;
+  },
   methods: {
-    save() {
-      console.log('Saved');
+    ...mapActions(['deleteTodo', 'updateTodo']),
 
+    save() {
+      if (this.selected.actionType === 'delete') {
+        this.deleteTodo(this.selected.id);
+      } else {
+        this.updateTodo({ ...this.selected, completed: this.isCompleted, title: this.title });
+      }
       this.$emit('close');
     },
   },
@@ -18,20 +39,48 @@ export default {
 
 <template>
   <div class="v-dialog">
-    <div class="v-dialog__overlay"/>
+    <div class="v-dialog__wrapper">
+      <div class="v-dialog__overlay"/>
 
-    <div class="v-dialog__container">
-      <div class="v-dialog__content">
-        <h2 class="v-dialog__content__title">Are you sure?</h2>
-        <p class="v-dialog__content__text">
-          Do you really want to delete your account?
-          This process cannot be undone
-        </p>
-      </div>
+      <div class="v-dialog__container">
+        <div class="v-dialog__content">
+          <template v-if="selected.actionType === 'delete'">
+            <h2 class="v-dialog__content__title">Are you sure?</h2>
+            <p class="v-dialog__content__text">
+              Do you really want to delete your account?
+              This process cannot be undone
+            </p>
+          </template>
 
-      <div class="v-dialog__footer">
-        <v-button :action-type="'error'" @click.native="$emit('close')">Cancel</v-button>
-        <v-button :action-type="'success'" @click.native="save">Save</v-button>
+          <template v-else>
+            <label class="block text-gray-700 text-sm font-bold mb-2 text-left" for="username">
+              Title
+            </label>
+            <input
+              v-model="title"
+              class="v-dialog__input"
+              id="username"
+              type="text"
+              :placeholder="title"
+            >
+
+            <label class="block text-gray-500 mt-3 text-left">
+              <input
+                v-model="isCompleted"
+                class="mr-2 leading-tight"
+                type="checkbox"
+              >
+              <span class="text-sm">
+                Completed
+              </span>
+            </label>
+          </template>
+        </div>
+
+        <div class="v-dialog__footer">
+          <v-button :action-type="'error'" @click.native="$emit('close')">Cancel</v-button>
+          <v-button :action-type="'success'" @click.native="save">Save</v-button>
+        </div>
       </div>
     </div>
   </div>
@@ -40,6 +89,17 @@ export default {
 <style lang="scss" scoped>
 .v-dialog {
   $self: &;
+
+  @apply absolute;
+
+  &__input {
+    @apply shadow appearance-none border rounded w-full py-2 px-3 text-gray-700
+    leading-tight focus:outline-none;
+  }
+
+  &__wrapper {
+    @apply relative w-screen h-screen flex justify-center content-center;
+  }
 
   &__overlay {
     @apply absolute bg-black opacity-80 inset-0 z-0;

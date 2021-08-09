@@ -1,11 +1,13 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import VDataTable from './components/VDataTable.vue';
+import VDialog from './components/VDialog.vue';
 
 export default {
   name: 'App',
   components: {
     VDataTable,
+    VDialog,
   },
   data() {
     return {
@@ -37,22 +39,34 @@ export default {
         },
       ],
       tableItems: [],
+      isDialogVisible: false,
+      selectedItem: {},
+      actionType: '',
     };
   },
   computed: {
     ...mapGetters(['getTableItems']),
+
+    actionObject() {
+      return { ...this.selectedItem, actionType: this.actionType };
+    },
   },
   mounted() {
-    this.fetchTodos()
-      .then(() => {
-        this.fetchUsers()
-          .then(() => {
-            this.tableItems = this.getTableItems;
-          });
-      });
+    this.fetchTodos();
+    this.fetchUsers();
   },
   methods: {
     ...mapActions(['fetchTodos', 'fetchUsers']),
+    editItem(item) {
+      this.isDialogVisible = true;
+      this.selectedItem = item;
+      this.actionType = 'edit';
+    },
+    deleteItem(item) {
+      this.isDialogVisible = true;
+      this.selectedItem = item;
+      this.actionType = 'delete';
+    },
   },
 };
 </script>
@@ -62,9 +76,17 @@ export default {
     <div class="container mx-auto">
       <v-data-table
         :headers="tableHeaders"
-        :items="tableItems"
+        :items="getTableItems"
+        @edit="editItem"
+        @delete="deleteItem"
       />
     </div>
+
+    <v-dialog
+      v-if="isDialogVisible"
+      :selected="actionObject"
+      @close="isDialogVisible = false"
+    />
   </div>
 </template>
 

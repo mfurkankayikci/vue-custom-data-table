@@ -1,16 +1,28 @@
 <script>
-import VDialog from './VDialog.vue';
+import VPagination from './VPagination.vue';
 
 export default {
   name: 'VDataTable',
   components: {
-    VDialog,
+    VPagination,
   },
   data() {
     return {
-      isDialogVisible: false,
       textCenterInThead: ['status', 'actions'],
+      currentPage: 1,
     };
+  },
+  computed: {
+    dataPerPage() {
+      const maxElementCountInPage = 10;
+      return [
+        ...this.items.slice((this.currentPage - 1) * maxElementCountInPage,
+          this.currentPage * maxElementCountInPage),
+      ];
+    },
+    itemsPerPage() {
+      return parseInt(this.items.length / 10, 10);
+    },
   },
   props: {
     headers: {
@@ -20,6 +32,17 @@ export default {
     items: {
       type: Array,
       default: () => [],
+    },
+  },
+  methods: {
+    setCurrentPage(value) {
+      this.currentPage = value;
+    },
+    editItem(item) {
+      this.$emit('edit', item);
+    },
+    deleteItem(item) {
+      this.$emit('delete', item);
     },
   },
 };
@@ -44,7 +67,7 @@ export default {
 
         <tbody class="v-data-table__tbody">
           <tr
-            v-for="item in items"
+            v-for="item in dataPerPage"
             :key="item.id"
             class="v-data-table__tbody__row"
           >
@@ -82,10 +105,16 @@ export default {
             </td>
             <td class="v-data-table__tbody__column">
               <div class="v-data-table__tbody__column__item flex item-center justify-center">
-                <div class="v-data-table__tbody__column__item__data action--button edit--button">
+                <div
+                  class="v-data-table__tbody__column__item__data action--button edit--button"
+                  @click="editItem(item)"
+                >
                   <img src="../assets/svg/edit_icon.svg" alt="Edit">
                 </div>
-                <div class="v-data-table__tbody__column__item__data action--button delete--button">
+                <div
+                  class="v-data-table__tbody__column__item__data action--button delete--button"
+                  @click="deleteItem(item)"
+                >
                   <img src="../assets/svg/delete_icon.svg" alt="Delete">
                 </div>
               </div>
@@ -93,12 +122,15 @@ export default {
           </tr>
         </tbody>
       </table>
-    </div>
 
-    <v-dialog
-      v-if="isDialogVisible"
-      @close="isDialogVisible = false"
-    />
+      <v-pagination
+        :item-count="itemsPerPage"
+        :active-page="currentPage"
+        @prevPage="currentPage--"
+        @currentPage="setCurrentPage"
+        @nextPage="currentPage++"
+      />
+    </div>
   </div>
 </template>
 
@@ -106,10 +138,10 @@ export default {
 .v-data-table {
   $self: &;
 
-  @apply w-full lg:w-5/6;
+  @apply w-full;
 
   &__container {
-    @apply max-h-96 bg-white shadow-md rounded overflow-scroll;
+    @apply bg-white shadow-md rounded;
 
     #{ $self }__content {
       @apply min-w-max w-full table-auto;
@@ -119,7 +151,7 @@ export default {
       }
 
       #{ $self }__tbody {
-        @apply text-gray-600 text-sm font-light;
+        @apply text-gray-600 text-sm;
 
         &__row {
           @apply border-b border-gray-200 hover:bg-gray-100;
